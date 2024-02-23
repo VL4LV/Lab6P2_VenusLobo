@@ -1,6 +1,9 @@
 
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -58,7 +61,7 @@ public class Principal extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTree1 = new javax.swing.JTree();
+        tree = new javax.swing.JTree();
         jButton4 = new javax.swing.JButton();
         pop_menu = new javax.swing.JPopupMenu();
         menu_modificar = new javax.swing.JMenuItem();
@@ -102,6 +105,11 @@ public class Principal extends javax.swing.JFrame {
         jLabel7.setText("Estadio");
 
         boton_Agregar.setText("Agregar");
+        boton_Agregar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                boton_AgregarMouseClicked(evt);
+            }
+        });
         boton_Agregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 boton_AgregarActionPerformed(evt);
@@ -303,7 +311,7 @@ public class Principal extends javax.swing.JFrame {
         jLabel14.setText("Jugadores");
         jPanel4.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, -1, -1));
 
-        jScrollPane3.setViewportView(jTree1);
+        jScrollPane3.setViewportView(tree);
 
         jPanel4.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(467, 172, 180, 240));
 
@@ -589,10 +597,7 @@ public class Principal extends javax.swing.JFrame {
             ((Jugador) modelList.get(list_jugadores.getSelectedIndex()))
                     .setEdad(Integer.parseInt(JOptionPane.showInputDialog("Ingrese nueva edad: "))
                     );
-            ((Jugador) modelList.get(list_jugadores.getSelectedIndex()))
-                    .setPosicion(JOptionPane.showInputDialog("Ingrese nueva posicion: ")
-                    );
-            
+           
             list_jugadores.setModel(modelList);
         }
     }//GEN-LAST:event_menu_modificarActionPerformed
@@ -607,6 +612,25 @@ public class Principal extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(dialogo_transferir, "Jugador eliminado exitosamente.");
         }
     }//GEN-LAST:event_menu_borrarActionPerformed
+
+    private void boton_AgregarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_AgregarMouseClicked
+        // TODO add your handling code here:
+        DefaultTreeModel tree = (DefaultTreeModel) this.tree.getModel();
+        DefaultMutableTreeNode nodo_raiz=(DefaultMutableTreeNode)tree.getRoot();
+        
+        DefaultMutableTreeNode nodo_equipo;  
+        nodo_equipo = new DefaultMutableTreeNode(new Equipo(texto_nombreEquipo.getText(),
+                (String)texto_pais.getText(),
+                texto_ciudad.getText(), 
+                texto_estadio.getText()));
+        
+        DefaultMutableTreeNode pais;  
+        pais = new DefaultMutableTreeNode(texto_pais.getText());
+        
+        pais.add(nodo_equipo);
+        nodo_raiz.add(pais);
+        tree.reload();
+    }//GEN-LAST:event_boton_AgregarMouseClicked
 
     /**
      * @param args the command line arguments
@@ -681,7 +705,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JToolBar jToolBar1;
-    private javax.swing.JTree jTree1;
     private javax.swing.JList<String> list_jugadores;
     private javax.swing.JMenuItem menu_borrar;
     private javax.swing.JMenuItem menu_modificar;
@@ -692,5 +715,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JTextField texto_nombreEquipo;
     private javax.swing.JTextField texto_nombreJugador;
     private javax.swing.JTextField texto_pais;
+    private javax.swing.JTree tree;
     // End of variables declaration//GEN-END:variables
 }
