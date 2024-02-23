@@ -8,10 +8,10 @@
  * @author ADMIN
  */
 public class Equipo {
-    private String nombre; 
-    private String pais; 
-    private String ciudad; 
-    private String estadio; 
+    public String nombre; 
+    public String pais; 
+    public String ciudad; 
+    public String estadio; 
 
     public Equipo() {
     }

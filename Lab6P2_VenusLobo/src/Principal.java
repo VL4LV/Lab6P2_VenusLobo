@@ -1,8 +1,11 @@
+
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author ADMIN
@@ -51,12 +54,15 @@ public class Principal extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList<>();
+        list_jugadores = new javax.swing.JList<>();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTree1 = new javax.swing.JTree();
         jButton4 = new javax.swing.JButton();
+        pop_menu = new javax.swing.JPopupMenu();
+        menu_modificar = new javax.swing.JMenuItem();
+        menu_borrar = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
@@ -195,6 +201,14 @@ public class Principal extends javax.swing.JFrame {
         spinner_edad.setModel(new javax.swing.SpinnerNumberModel(15, 15, 45, 1));
 
         boton_Agregar2.setText("Agregar");
+        boton_Agregar2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                boton_Agregar2MouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                boton_Agregar2MouseEntered(evt);
+            }
+        });
         boton_Agregar2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 boton_Agregar2ActionPerformed(evt);
@@ -269,28 +283,29 @@ public class Principal extends javax.swing.JFrame {
         jLabel12.setText("Transferencias");
         jPanel4.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(275, 72, -1, -1));
 
-        jList2.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
+        list_jugadores.setModel(new DefaultListModel());
+        list_jugadores.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                list_jugadoresMouseClicked(evt);
+            }
         });
-        jScrollPane2.setViewportView(jList2);
+        jScrollPane2.setViewportView(list_jugadores);
 
-        jPanel4.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(122, 174, 131, 236));
+        jPanel4.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(83, 174, 170, 236));
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(0, 0, 0));
         jLabel13.setText("Equipos");
-        jPanel4.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(499, 135, -1, -1));
+        jPanel4.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 140, -1, -1));
 
         jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel14.setForeground(new java.awt.Color(0, 0, 0));
         jLabel14.setText("Jugadores");
-        jPanel4.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(145, 135, -1, -1));
+        jPanel4.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, -1, -1));
 
         jScrollPane3.setViewportView(jTree1);
 
-        jPanel4.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(467, 178, 133, 234));
+        jPanel4.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(467, 172, 180, 240));
 
         jButton4.setText("Transferir ->");
         jPanel4.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(305, 258, -1, -1));
@@ -305,6 +320,22 @@ public class Principal extends javax.swing.JFrame {
             dialogo_transferirLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
+
+        menu_modificar.setText("Modificar\n");
+        menu_modificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menu_modificarActionPerformed(evt);
+            }
+        });
+        pop_menu.add(menu_modificar);
+
+        menu_borrar.setText("Eliminar");
+        menu_borrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menu_borrarActionPerformed(evt);
+            }
+        });
+        pop_menu.add(menu_borrar);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -468,7 +499,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void item_equipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_equipoActionPerformed
         // TODO add your handling code here:
-        
+
         dialogo_equipos.pack();
         dialogo_equipos.setResizable(false);
         dialogo_equipos.setVisible(rootPaneCheckingEnabled);
@@ -476,7 +507,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void item_jugadoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_jugadoresActionPerformed
         // TODO add your handling code here:
-        
+
         dialogo_jugadores.pack();
         dialogo_jugadores.setResizable(false);
         dialogo_jugadores.setVisible(rootPaneCheckingEnabled);
@@ -506,6 +537,73 @@ public class Principal extends javax.swing.JFrame {
         dialogo_transferir.setResizable(false);
         dialogo_transferir.setVisible(rootPaneCheckingEnabled);
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void boton_Agregar2MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_Agregar2MouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_boton_Agregar2MouseEntered
+
+    private void boton_Agregar2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_Agregar2MouseClicked
+        // TODO add your handling code here:
+        //REVISAR QUE NO ESTE VACIO
+        if (texto_nombreJugador.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(dialogo_jugadores, "Llene todos los campos");
+        } else {
+
+            //TOMAR EL MODELO DE LA LISTA
+            DefaultListModel model = (DefaultListModel) list_jugadores.getModel();
+
+            //AGREGAR A LA LISTA
+            model.addElement(new Jugador(texto_nombreJugador.getText(),
+                    (Integer) spinner_edad.getValue(),
+                    (String) box_posicion.getSelectedItem()));
+
+            //MANDAR LOS DATOS AL MODELO
+            list_jugadores.setModel(model);
+
+            //LIMPIAR
+            texto_nombreJugador.setText("");
+            spinner_edad.setValue(15);
+            box_posicion.setSelectedIndex(0);
+            JOptionPane.showMessageDialog(dialogo_jugadores, "El jugador se agrego exitosamente.");
+        }
+    }//GEN-LAST:event_boton_Agregar2MouseClicked
+
+    private void list_jugadoresMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_list_jugadoresMouseClicked
+        // TODO add your handling code here:
+
+        if (list_jugadores.getSelectedIndex() >= 0) {
+            if (evt.getButton() == 3) {
+                pop_menu.show(evt.getComponent(), evt.getX(), evt.getY());
+            }
+        }
+    }//GEN-LAST:event_list_jugadoresMouseClicked
+
+    private void menu_modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_modificarActionPerformed
+        // TODO add your handling code here:
+        if (list_jugadores.getSelectedIndex() >= 0) {
+            DefaultListModel modelList = (DefaultListModel) list_jugadores.getModel();
+            
+            ((Jugador) modelList.get(list_jugadores.getSelectedIndex()))
+                    .setNombre(JOptionPane.showInputDialog("Ingrese nuevo nombre: ")
+                    );
+            ((Jugador) modelList.get(list_jugadores.getSelectedIndex()))
+                    .setEdad(Integer.parseInt(JOptionPane.showInputDialog("Ingrese nueva edad: "))
+                    );
+            ((Jugador) modelList.get(list_jugadores.getSelectedIndex()))
+                    .setPosicion(JOptionPane.showInputDialog("Ingrese nueva posicion: ")
+                    );
+            
+            list_jugadores.setModel(modelList);
+        }
+    }//GEN-LAST:event_menu_modificarActionPerformed
+
+    private void menu_borrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_borrarActionPerformed
+        // TODO add your handling code here:
+        
+        if (list_jugadores.getSelectedIndex() >= 0) {
+            
+        }
+    }//GEN-LAST:event_menu_borrarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -570,7 +668,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JList<String> jList2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -582,6 +679,10 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JTree jTree1;
+    private javax.swing.JList<String> list_jugadores;
+    private javax.swing.JMenuItem menu_borrar;
+    private javax.swing.JMenuItem menu_modificar;
+    private javax.swing.JPopupMenu pop_menu;
     private javax.swing.JSpinner spinner_edad;
     private javax.swing.JTextField texto_ciudad;
     private javax.swing.JTextField texto_estadio;
