@@ -601,7 +601,10 @@ public class Principal extends javax.swing.JFrame {
         // TODO add your handling code here:
         
         if (list_jugadores.getSelectedIndex() >= 0) {
-            
+            DefaultListModel mode = (DefaultListModel) list_jugadores.getModel();
+            mode.remove(list_jugadores.getSelectedIndex());
+            list_jugadores.setModel(mode);
+            JOptionPane.showMessageDialog(dialogo_transferir, "Jugador eliminado exitosamente.");
         }
     }//GEN-LAST:event_menu_borrarActionPerformed
 
