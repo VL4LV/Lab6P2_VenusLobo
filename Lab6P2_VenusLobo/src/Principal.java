@@ -641,23 +641,38 @@ public class Principal extends javax.swing.JFrame {
         DefaultTreeModel tree = (DefaultTreeModel) this.tree.getModel();
         DefaultMutableTreeNode nodo_raiz = (DefaultMutableTreeNode) tree.getRoot();
 
-        DefaultMutableTreeNode nodo_equipo;
-        nodo_equipo = new DefaultMutableTreeNode(new Equipo(texto_nombreEquipo.getText(),
-                (String) texto_pais.getText(),
-                texto_ciudad.getText(),
-                texto_estadio.getText()));
+        String paisNombre = texto_pais.getText();
+        String nombreEquipo = texto_nombreEquipo.getText();
+        String ciudad = texto_ciudad.getText();
+        String estadio = texto_estadio.getText();
 
-        DefaultMutableTreeNode pais;
-        pais = new DefaultMutableTreeNode(texto_pais.getText());
+        DefaultMutableTreeNode nodo_pais = null;
 
-        pais.add(nodo_equipo);
-        nodo_raiz.add(pais);
+        int numHijos = nodo_raiz.getChildCount();
+        for (int i = 0; i < numHijos; i++) {
+            DefaultMutableTreeNode nodo = (DefaultMutableTreeNode) nodo_raiz.getChildAt(i);
+            if (nodo.getUserObject().equals(paisNombre)) {
+                nodo_pais = nodo;
+                break;
+            }
+        }
+
+        if (nodo_pais == null) {
+            nodo_pais = new DefaultMutableTreeNode(paisNombre);
+            nodo_raiz.add(nodo_pais);
+            tree.reload();
+        }
+
+        DefaultMutableTreeNode nodo_equipo = new DefaultMutableTreeNode(new Equipo(nombreEquipo, paisNombre, ciudad, estadio));
+        nodo_pais.add(nodo_equipo);
+
         tree.reload();
 
         texto_pais.setText("");
         texto_nombreEquipo.setText("");
         texto_ciudad.setText("");
         texto_estadio.setText("");
+
         JOptionPane.showMessageDialog(dialogo_equipos, "Equipo creado exitosamente.");
     }//GEN-LAST:event_boton_AgregarMouseClicked
 
@@ -690,17 +705,15 @@ public class Principal extends javax.swing.JFrame {
 
     private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
         // TODO add your handling code here:
-        
-        //verificar si tiene una persona seleccionada
+
         if (list_jugadores.getSelectedIndex() >= 0) {
             DefaultTreeModel modeloARBOL = (DefaultTreeModel) tree.getModel();
             DefaultMutableTreeNode raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
-           
-            //obtener la persona a guardar
+
             DefaultListModel modeloLISTA = (DefaultListModel) list_jugadores.getModel();
 
             String nombre;
-            String posicion; 
+            String posicion;
             int edad;
             posicion = ((Jugador) modeloLISTA.get(list_jugadores.getSelectedIndex())).getPosicion();
 
@@ -708,20 +721,32 @@ public class Principal extends javax.swing.JFrame {
             edad = ((Jugador) modeloLISTA.get(list_jugadores.getSelectedIndex())).getEdad();
 
             int centinela = -1;
-            
-            for (int i = 0; i < raiz.getChildCount(); i++) {
-                if (raiz.getChildAt(i).toString().equals(posicion)) {
-                    DefaultMutableTreeNode p = new DefaultMutableTreeNode(new Jugador(nombre,edad, posicion));
-                    ((DefaultMutableTreeNode) raiz.getChildAt(i)).add(p);
+
+            int row = tree.getClosestRowForLocation(evt.getX(), evt.getY());
+            tree.setSelectionRow(row);
+
+            Object v1 = tree.getSelectionPath().getLastPathComponent();
+
+            nodo_seleccionado = (DefaultMutableTreeNode) v1;
+
+            if (nodo_seleccionado.getUserObject() instanceof Equipo) {
+                equipo_seleccionado = (Equipo) nodo_seleccionado.getUserObject();
+                popMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+            }
+
+            for (int i = 0; i < nodo_seleccionado.getChildCount(); i++) {
+                if (nodo_seleccionado.getChildAt(i).toString().equals(posicion)) {
+                    DefaultMutableTreeNode p = new DefaultMutableTreeNode(new Jugador(nombre, edad, posicion));
+                    ((DefaultMutableTreeNode) nodo_seleccionado.getChildAt(i)).add(p);
                     centinela = 1;
                 } //fin if
             } //fin for  
 
             if (centinela == -1) {
                 DefaultMutableTreeNode n = new DefaultMutableTreeNode(posicion);
-                DefaultMutableTreeNode p= new DefaultMutableTreeNode(new Jugador(nombre, edad,posicion) );
+                DefaultMutableTreeNode p = new DefaultMutableTreeNode(new Jugador(nombre, edad, posicion));
                 n.add(p);
-                raiz.add(n);
+                nodo_seleccionado.add(n);
             }  // fin if          
             modeloARBOL.reload();
 
