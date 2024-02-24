@@ -613,15 +613,24 @@ public class Principal extends javax.swing.JFrame {
         // TODO add your handling code here:
         if (list_jugadores.getSelectedIndex() >= 0) {
             DefaultListModel modelList = (DefaultListModel) list_jugadores.getModel();
-            boolean validado = true; // Inicializamos a true, asumiendo que el nombre es válido
+            boolean validado = true;
             String nom = JOptionPane.showInputDialog("Ingrese nuevo nombre: ");
+
             for (int i = 0; i < nom.length(); i++) {
                 char c = nom.charAt(i);
-                if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))) { 
+                if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))) {
                     validado = false;
                     break;
                 }
             }
+
+            int nuevaEdad;
+            do {
+                nuevaEdad = Integer.parseInt(JOptionPane.showInputDialog("Ingrese nueva edad: "));
+                if (nuevaEdad <= 15) {
+                    JOptionPane.showMessageDialog(dialogo_transferir, "La edad debe ser mayor de 15 años.");
+                }
+            } while (nuevaEdad <= 15);
 
             if (validado) {
                 ((Jugador) modelList.get(list_jugadores.getSelectedIndex()))
@@ -630,8 +639,7 @@ public class Principal extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(dialogo_transferir, "El nombre no puede contener numeros.");
             }
 
-            ((Jugador) modelList.get(list_jugadores.getSelectedIndex()))
-                    .setEdad(Integer.parseInt(JOptionPane.showInputDialog("Ingrese nueva edad: ")));
+            ((Jugador) modelList.get(list_jugadores.getSelectedIndex())).setEdad(nuevaEdad);
 
             list_jugadores.setModel(modelList);
         }
@@ -650,35 +658,34 @@ public class Principal extends javax.swing.JFrame {
 
     private void boton_AgregarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_AgregarMouseClicked
         // TODO add your handling code here:
-        DefaultTreeModel tree = (DefaultTreeModel) this.tree.getModel();
-        DefaultMutableTreeNode nodo_raiz = (DefaultMutableTreeNode) tree.getRoot();
+        DefaultTreeModel treeModel = (DefaultTreeModel) this.tree.getModel();
+        DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) treeModel.getRoot();
 
         String paisNombre = texto_pais.getText();
         String nombreEquipo = texto_nombreEquipo.getText();
         String ciudad = texto_ciudad.getText();
         String estadio = texto_estadio.getText();
 
-        DefaultMutableTreeNode nodo_pais = null;
+        DefaultMutableTreeNode countryNode = null;
 
-        int numHijos = nodo_raiz.getChildCount();
-        for (int i = 0; i < numHijos; i++) {
-            DefaultMutableTreeNode nodo = (DefaultMutableTreeNode) nodo_raiz.getChildAt(i);
-            if (nodo.getUserObject().equals(paisNombre)) {
-                nodo_pais = nodo;
+        for (int i = 0; i < rootNode.getChildCount(); i++) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) rootNode.getChildAt(i);
+            if (node.getUserObject().equals(paisNombre)) {
+                countryNode = node;
                 break;
             }
         }
 
-        if (nodo_pais == null) {
-            nodo_pais = new DefaultMutableTreeNode(paisNombre);
-            nodo_raiz.add(nodo_pais);
-            tree.reload();
+        if (countryNode == null) {
+            countryNode = new DefaultMutableTreeNode(paisNombre);
+            rootNode.add(countryNode);
+            treeModel.reload();
         }
 
-        DefaultMutableTreeNode nodo_equipo = new DefaultMutableTreeNode(new Equipo(nombreEquipo, paisNombre, ciudad, estadio));
-        nodo_pais.add(nodo_equipo);
+        DefaultMutableTreeNode teamNode = new DefaultMutableTreeNode(new Equipo(nombreEquipo, paisNombre, ciudad, estadio));
+        countryNode.add(teamNode);
 
-        tree.reload();
+        treeModel.reload();
 
         texto_pais.setText("");
         texto_nombreEquipo.setText("");
@@ -719,52 +726,24 @@ public class Principal extends javax.swing.JFrame {
         // TODO add your handling code here:
 
         if (list_jugadores.getSelectedIndex() >= 0) {
-            DefaultTreeModel modeloARBOL = (DefaultTreeModel) tree.getModel();
-            DefaultMutableTreeNode raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
+            DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
+            DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 
-            DefaultListModel modeloLISTA = (DefaultListModel) list_jugadores.getModel();
+            if (selectedNode != null && selectedNode.getUserObject() instanceof Equipo) {
+                DefaultListModel jugadorListModel = (DefaultListModel) list_jugadores.getModel();
+                String nombre = ((Jugador) jugadorListModel.get(list_jugadores.getSelectedIndex())).getNombre();
+                String posicion = ((Jugador) jugadorListModel.get(list_jugadores.getSelectedIndex())).getPosicion();
+                int edad = ((Jugador) jugadorListModel.get(list_jugadores.getSelectedIndex())).getEdad();
 
-            String nombre;
-            String posicion;
-            int edad;
-            posicion = ((Jugador) modeloLISTA.get(list_jugadores.getSelectedIndex())).getPosicion();
+                DefaultMutableTreeNode playerNode = new DefaultMutableTreeNode(new Jugador(nombre, edad, posicion));
+                selectedNode.add(playerNode);
 
-            nombre = ((Jugador) modeloLISTA.get(list_jugadores.getSelectedIndex())).getNombre();
-            edad = ((Jugador) modeloLISTA.get(list_jugadores.getSelectedIndex())).getEdad();
-
-            int centinela = -1;
-
-            int row = tree.getClosestRowForLocation(evt.getX(), evt.getY());
-            tree.setSelectionRow(row);
-
-            Object v1 = tree.getSelectionPath().getLastPathComponent();
-
-            nodo_seleccionado = (DefaultMutableTreeNode) v1;
-
-            if (nodo_seleccionado.getUserObject() instanceof Equipo) {
-                equipo_seleccionado = (Equipo) nodo_seleccionado.getUserObject();
-                popMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+                treeModel.reload();
+            } else {
+                JOptionPane.showMessageDialog(this, "Seleccione un equipo para agregar jugadores.");
             }
-
-            for (int i = 0; i < nodo_seleccionado.getChildCount(); i++) {
-                if (nodo_seleccionado.getChildAt(i).toString().equals(posicion)) {
-                    DefaultMutableTreeNode p = new DefaultMutableTreeNode(new Jugador(nombre, edad, posicion));
-                    ((DefaultMutableTreeNode) nodo_seleccionado.getChildAt(i)).add(p);
-                    centinela = 1;
-                } //fin if
-            } //fin for  
-
-            if (centinela == -1) {
-                DefaultMutableTreeNode n = new DefaultMutableTreeNode(posicion);
-                DefaultMutableTreeNode p = new DefaultMutableTreeNode(new Jugador(nombre, edad, posicion));
-                n.add(p);
-                nodo_seleccionado.add(n);
-            }  // fin if          
-            modeloARBOL.reload();
-
         } else {
-            JOptionPane.showMessageDialog(this,
-                    "No hay jugador seleccionado.");
+            JOptionPane.showMessageDialog(this, "No hay jugador seleccionado.");
         }
     }//GEN-LAST:event_jButton4MouseClicked
 
