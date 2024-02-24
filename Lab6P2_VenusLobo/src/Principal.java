@@ -4,6 +4,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -66,6 +67,8 @@ public class Principal extends javax.swing.JFrame {
         pop_menu = new javax.swing.JPopupMenu();
         menu_modificar = new javax.swing.JMenuItem();
         menu_borrar = new javax.swing.JMenuItem();
+        popMenu = new javax.swing.JPopupMenu();
+        delete_equipo = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
@@ -311,11 +314,23 @@ public class Principal extends javax.swing.JFrame {
         jLabel14.setText("Jugadores");
         jPanel4.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, -1, -1));
 
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("Equipos");
+        tree.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        tree.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                treeMouseClicked(evt);
+            }
+        });
         jScrollPane3.setViewportView(tree);
 
         jPanel4.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(467, 172, 180, 240));
 
         jButton4.setText("Transferir ->");
+        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton4MouseClicked(evt);
+            }
+        });
         jPanel4.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(305, 258, -1, -1));
 
         javax.swing.GroupLayout dialogo_transferirLayout = new javax.swing.GroupLayout(dialogo_transferir.getContentPane());
@@ -344,6 +359,14 @@ public class Principal extends javax.swing.JFrame {
             }
         });
         pop_menu.add(menu_borrar);
+
+        delete_equipo.setText("Eliminar");
+        delete_equipo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                delete_equipoActionPerformed(evt);
+            }
+        });
+        popMenu.add(delete_equipo);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -590,21 +613,21 @@ public class Principal extends javax.swing.JFrame {
         // TODO add your handling code here:
         if (list_jugadores.getSelectedIndex() >= 0) {
             DefaultListModel modelList = (DefaultListModel) list_jugadores.getModel();
-            
+
             ((Jugador) modelList.get(list_jugadores.getSelectedIndex()))
                     .setNombre(JOptionPane.showInputDialog("Ingrese nuevo nombre: ")
                     );
             ((Jugador) modelList.get(list_jugadores.getSelectedIndex()))
                     .setEdad(Integer.parseInt(JOptionPane.showInputDialog("Ingrese nueva edad: "))
                     );
-           
+
             list_jugadores.setModel(modelList);
         }
     }//GEN-LAST:event_menu_modificarActionPerformed
 
     private void menu_borrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_borrarActionPerformed
         // TODO add your handling code here:
-        
+
         if (list_jugadores.getSelectedIndex() >= 0) {
             DefaultListModel mode = (DefaultListModel) list_jugadores.getModel();
             mode.remove(list_jugadores.getSelectedIndex());
@@ -616,21 +639,97 @@ public class Principal extends javax.swing.JFrame {
     private void boton_AgregarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_AgregarMouseClicked
         // TODO add your handling code here:
         DefaultTreeModel tree = (DefaultTreeModel) this.tree.getModel();
-        DefaultMutableTreeNode nodo_raiz=(DefaultMutableTreeNode)tree.getRoot();
-        
-        DefaultMutableTreeNode nodo_equipo;  
+        DefaultMutableTreeNode nodo_raiz = (DefaultMutableTreeNode) tree.getRoot();
+
+        DefaultMutableTreeNode nodo_equipo;
         nodo_equipo = new DefaultMutableTreeNode(new Equipo(texto_nombreEquipo.getText(),
-                (String)texto_pais.getText(),
-                texto_ciudad.getText(), 
+                (String) texto_pais.getText(),
+                texto_ciudad.getText(),
                 texto_estadio.getText()));
-        
-        DefaultMutableTreeNode pais;  
+
+        DefaultMutableTreeNode pais;
         pais = new DefaultMutableTreeNode(texto_pais.getText());
-        
+
         pais.add(nodo_equipo);
         nodo_raiz.add(pais);
         tree.reload();
+
+        texto_pais.setText("");
+        texto_nombreEquipo.setText("");
+        texto_ciudad.setText("");
+        texto_estadio.setText("");
+        JOptionPane.showMessageDialog(dialogo_equipos, "Equipo creado exitosamente.");
     }//GEN-LAST:event_boton_AgregarMouseClicked
+
+    private void treeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_treeMouseClicked
+        // TODO add your handling code here:
+        if (evt.getButton() == 3) {
+            //seleccionar un nodo con click derecho
+            int row = tree.getClosestRowForLocation(evt.getX(), evt.getY());
+            tree.setSelectionRow(row);
+
+            Object v1 = tree.getSelectionPath().getLastPathComponent();
+
+            nodo_seleccionado = (DefaultMutableTreeNode) v1;
+
+            if (nodo_seleccionado.getUserObject() instanceof Equipo) {
+                equipo_seleccionado = (Equipo) nodo_seleccionado.getUserObject();
+                popMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+            }
+
+        }
+    }//GEN-LAST:event_treeMouseClicked
+
+    private void delete_equipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delete_equipoActionPerformed
+        // TODO add your handling code here:
+        DefaultTreeModel m = (DefaultTreeModel) tree.getModel();
+        m.removeNodeFromParent(nodo_seleccionado);
+        m.reload();
+        JOptionPane.showMessageDialog(dialogo_transferir, "Se elimino el equipo exitosamente.");
+    }//GEN-LAST:event_delete_equipoActionPerformed
+
+    private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
+        // TODO add your handling code here:
+        
+        //verificar si tiene una persona seleccionada
+        if (list_jugadores.getSelectedIndex() >= 0) {
+            DefaultTreeModel modeloARBOL = (DefaultTreeModel) tree.getModel();
+            DefaultMutableTreeNode raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
+           
+            //obtener la persona a guardar
+            DefaultListModel modeloLISTA = (DefaultListModel) list_jugadores.getModel();
+
+            String nombre;
+            String posicion; 
+            int edad;
+            posicion = ((Jugador) modeloLISTA.get(list_jugadores.getSelectedIndex())).getPosicion();
+
+            nombre = ((Jugador) modeloLISTA.get(list_jugadores.getSelectedIndex())).getNombre();
+            edad = ((Jugador) modeloLISTA.get(list_jugadores.getSelectedIndex())).getEdad();
+
+            int centinela = -1;
+            
+            for (int i = 0; i < raiz.getChildCount(); i++) {
+                if (raiz.getChildAt(i).toString().equals(posicion)) {
+                    DefaultMutableTreeNode p = new DefaultMutableTreeNode(new Jugador(nombre,edad, posicion));
+                    ((DefaultMutableTreeNode) raiz.getChildAt(i)).add(p);
+                    centinela = 1;
+                } //fin if
+            } //fin for  
+
+            if (centinela == -1) {
+                DefaultMutableTreeNode n = new DefaultMutableTreeNode(posicion);
+                DefaultMutableTreeNode p= new DefaultMutableTreeNode(new Jugador(nombre, edad,posicion) );
+                n.add(p);
+                raiz.add(n);
+            }  // fin if          
+            modeloARBOL.reload();
+
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "No hay jugador seleccionado.");
+        }
+    }//GEN-LAST:event_jButton4MouseClicked
 
     /**
      * @param args the command line arguments
@@ -667,10 +766,14 @@ public class Principal extends javax.swing.JFrame {
         });
     }
 
+    DefaultMutableTreeNode nodo_seleccionado;
+    Equipo equipo_seleccionado;
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton boton_Agregar;
     private javax.swing.JButton boton_Agregar2;
     private javax.swing.JComboBox<String> box_posicion;
+    private javax.swing.JMenuItem delete_equipo;
     private javax.swing.JDialog dialogo_equipos;
     private javax.swing.JDialog dialogo_jugadores;
     private javax.swing.JDialog dialogo_transferir;
@@ -708,6 +811,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JList<String> list_jugadores;
     private javax.swing.JMenuItem menu_borrar;
     private javax.swing.JMenuItem menu_modificar;
+    private javax.swing.JPopupMenu popMenu;
     private javax.swing.JPopupMenu pop_menu;
     private javax.swing.JSpinner spinner_edad;
     private javax.swing.JTextField texto_ciudad;
