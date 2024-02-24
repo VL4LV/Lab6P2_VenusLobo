@@ -613,13 +613,25 @@ public class Principal extends javax.swing.JFrame {
         // TODO add your handling code here:
         if (list_jugadores.getSelectedIndex() >= 0) {
             DefaultListModel modelList = (DefaultListModel) list_jugadores.getModel();
+            boolean validado = true; // Inicializamos a true, asumiendo que el nombre es válido
+            String nom = JOptionPane.showInputDialog("Ingrese nuevo nombre: ");
+            for (int i = 0; i < nom.length(); i++) {
+                char c = nom.charAt(i);
+                if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))) { 
+                    validado = false;
+                    break;
+                }
+            }
+
+            if (validado) {
+                ((Jugador) modelList.get(list_jugadores.getSelectedIndex()))
+                        .setNombre(nom);
+            } else {
+                JOptionPane.showMessageDialog(dialogo_transferir, "El nombre no puede contener numeros.");
+            }
 
             ((Jugador) modelList.get(list_jugadores.getSelectedIndex()))
-                    .setNombre(JOptionPane.showInputDialog("Ingrese nuevo nombre: ")
-                    );
-            ((Jugador) modelList.get(list_jugadores.getSelectedIndex()))
-                    .setEdad(Integer.parseInt(JOptionPane.showInputDialog("Ingrese nueva edad: "))
-                    );
+                    .setEdad(Integer.parseInt(JOptionPane.showInputDialog("Ingrese nueva edad: ")));
 
             list_jugadores.setModel(modelList);
         }
